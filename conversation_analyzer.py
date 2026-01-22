@@ -201,9 +201,11 @@ class ConversationAnalyzer:
         # Check short words usage
         word_stats = analysis['word_statistics']
         if word_stats.get('short_words_count', 0) > 0:
+            count = word_stats['short_words_count']
+            word_plural = "word" if count == 1 else "words"
             recommendations.append(
-                f"Informal Short Words: Found {word_stats['short_words_count']} "
-                f"informal short words ({', '.join(word_stats.get('short_words_used', []))}). "
+                f"Informal Short Words: Found {count} "
+                f"informal short {word_plural} ({', '.join(word_stats.get('short_words_used', []))}). "
                 "Consider using complete words for formal communication."
             )
 

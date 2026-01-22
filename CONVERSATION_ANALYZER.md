@@ -89,7 +89,7 @@ Language Mixing:
   - Mixed sentences: 0 / 2
 
 Recommendations for Improvement:
-  1. Informal Short Words: Found 1 informal short words (u). Consider using complete words for formal communication.
+  1. Informal Short Words: Found 1 informal short word (u). Consider using complete words for formal communication.
   2. Good communication! Your text shows consistent language use and proper grammar patterns.
 
 ============================================================
@@ -143,7 +143,7 @@ Generates a human-readable formatted report of the conversation analysis.
         'mixing_percentage': 0.0
     },
     'recommendations': [
-        "Informal Short Words: Found 1 informal short words (u). Consider using complete words for formal communication."
+        "Informal Short Words: Found 1 informal short word (u). Consider using complete words for formal communication."
     ]
 }
 ```
