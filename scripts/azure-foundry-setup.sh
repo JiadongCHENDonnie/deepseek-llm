@@ -2,7 +2,8 @@
 set -euo pipefail
 
 # User email (included everywhere it's needed)
-USER_EMAIL="donniechen92@gmail.com"
+# Override with environment variable if needed: USER_EMAIL=your@email.com ./azure-foundry-setup.sh
+USER_EMAIL="${USER_EMAIL:-donniechen92@gmail.com}"
 
 # 0. Ensure Azure CLI is installed and you are signed in
 echo "Step 0: Sign in interactively if not already signed in..."
@@ -40,8 +41,8 @@ az account set --subscription "$SUBSCRIPTION_ID"
 echo "Active subscription set to $SUBSCRIPTION_ID"
 
 # 3. Create resource group (Australia East) with tags
-RG_NAME="foundry-rg-donnie"
-LOCATION="australiaeast"
+RG_NAME="${RG_NAME:-foundry-rg-donnie}"
+LOCATION="${LOCATION:-australiaeast}"
 echo "Creating resource group $RG_NAME in $LOCATION..."
 az group create \
   --name "$RG_NAME" \
@@ -51,10 +52,10 @@ az group create \
 echo "Resource group created or already exists."
 
 # 4. Create the Foundry (AIServices) resource in Basic mode
-FOUNDY_NAME="foundry-donnie-92-8f3b1c"  # ensure this is globally unique; change if needed
-echo "Creating Cognitive Services AIServices account $FOUNDY_NAME..."
+FOUNDRY_NAME="${FOUNDRY_NAME:-foundry-donnie-92-8f3b1c}"  # ensure this is globally unique; change if needed
+echo "Creating Cognitive Services AIServices account $FOUNDRY_NAME..."
 az cognitiveservices account create \
-  --name "$FOUNDY_NAME" \
+  --name "$FOUNDRY_NAME" \
   --resource-group "$RG_NAME" \
   --kind AIServices \
   --sku S0 \
@@ -64,8 +65,10 @@ az cognitiveservices account create \
 
 # 5. Wait for provisioning to succeed (polling)
 echo "Waiting for provisioning to complete (this may take a few minutes)..."
+MAX_RETRIES=60  # Maximum 10 minutes (60 * 10 seconds)
+RETRY_COUNT=0
 while true; do
-  state=$(az cognitiveservices account show --name "$FOUNDY_NAME" --resource-group "$RG_NAME" --query "properties.provisioningState" -o tsv)
+  state=$(az cognitiveservices account show --name "$FOUNDRY_NAME" --resource-group "$RG_NAME" --query "properties.provisioningState" -o tsv)
   echo "Provisioning state: $state"
   if [ "$state" = "Succeeded" ]; then
     break
@@ -74,37 +77,49 @@ while true; do
     echo "Provisioning failed. Check the Azure portal for details."
     exit 1
   fi
+  RETRY_COUNT=$((RETRY_COUNT + 1))
+  if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+    echo "Timeout: Provisioning did not complete within the expected time. Check the Azure portal for status."
+    exit 1
+  fi
   sleep 10
 done
 
 # 6. Show endpoint and keys
 echo "Foundry resource details:"
 az cognitiveservices account show \
-  --name "$FOUNDY_NAME" \
+  --name "$FOUNDRY_NAME" \
   --resource-group "$RG_NAME" \
   --query "{name:name, location:location, sku:sku.name, endpoint:properties.endpoint}" \
   --output table
 
+echo ""
+echo "WARNING: The following command will display sensitive access keys."
+echo "Keep these keys secure and do not share them publicly."
+echo ""
 echo "Listing keys (use these in SDK or portal if needed):"
 az cognitiveservices account keys list \
-  --name "$FOUNDY_NAME" \
+  --name "$FOUNDRY_NAME" \
   --resource-group "$RG_NAME" \
   --output table
 
 # 7. Assign Azure AI Owner role to your email at the resource group scope
 SCOPE="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG_NAME"
 echo "Assigning role 'Azure AI Owner' to $USER_EMAIL at scope $SCOPE..."
-az role assignment create \
+if az role assignment create \
   --assignee "$USER_EMAIL" \
   --role "Azure AI Owner" \
   --scope "$SCOPE" \
-  --output none || {
-    echo "Role assignment failed. Ensure you have permission to create role assignments or run this step as an admin."
-  }
-echo "Role assignment attempted."
+  --output none; then
+  echo "Role assignment successful."
+else
+  echo "WARNING: Role assignment failed. You may not have permission to create role assignments."
+  echo "This is optional but recommended for managing the resource. Contact your admin if needed."
+fi
 
 # 8. Print portal URL
+echo ""
 echo "Portal URL (open in browser):"
-echo "https://portal.azure.com/#resource/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG_NAME/providers/Microsoft.CognitiveServices/accounts/$FOUNDY_NAME/overview"
+echo "https://portal.azure.com/#resource/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG_NAME/providers/Microsoft.CognitiveServices/accounts/$FOUNDRY_NAME/overview"
 
 echo "Done."

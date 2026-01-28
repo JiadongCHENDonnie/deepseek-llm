@@ -353,11 +353,25 @@ The `scripts/azure-foundry-setup.sh` script helps you:
 ./scripts/azure-foundry-setup.sh
 ```
 
-The script will guide you through the setup process interactively. You can modify the following variables at the top of the script to customize your deployment:
-- `USER_EMAIL`: Your Azure account email
-- `RG_NAME`: Resource group name
+The script will guide you through the setup process interactively. 
+
+**Configuration:**
+
+You can customize the deployment by setting environment variables before running the script:
+
+```bash
+USER_EMAIL="your@email.com" \
+RG_NAME="your-resource-group" \
+LOCATION="australiaeast" \
+FOUNDRY_NAME="your-unique-foundry-name" \
+./scripts/azure-foundry-setup.sh
+```
+
+Available configuration variables:
+- `USER_EMAIL`: Your Azure account email (default: donniechen92@gmail.com)
+- `RG_NAME`: Resource group name (default: foundry-rg-donnie)
 - `LOCATION`: Azure region (default: australiaeast)
-- `FOUNDY_NAME`: Unique name for your AI Services account
+- `FOUNDRY_NAME`: Unique name for your AI Services account (default: foundry-donnie-92-8f3b1c)
 
 ## 7. FAQ
 
