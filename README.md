@@ -50,8 +50,9 @@
   <a href="#2-model-downloads">Model Download</a> |
   <a href="#5-quick-start">Quick Start</a> |
   <a href="#3-evaluation-results">Evaluation Results</a> |
-  <a href="#8-license">License</a> |
-  <a href="#9-citation">Citation</a>
+  <a href="#6-azure-ai-services-setup">Azure Setup</a> |
+  <a href="#9-license">License</a> |
+  <a href="#10-citation">Citation</a>
 </p>
 
 
@@ -327,7 +328,38 @@ generated_text = [output.outputs[0].text for output in outputs]
 print(generated_text)
 ```
 
-## 6. FAQ
+## 6. Azure AI Services Setup
+
+For users who want to deploy DeepSeek LLM on Azure AI Services (Foundry), we provide a convenience script that automates the setup process.
+
+### Azure Foundry Setup Script
+
+The `scripts/azure-foundry-setup.sh` script helps you:
+- Sign in to Azure CLI interactively
+- Select an Azure subscription
+- Create a resource group in Australia East
+- Provision an Azure AI Services (Foundry) account
+- Assign necessary roles for management
+- Display endpoint and access keys
+
+**Prerequisites:**
+- Azure CLI installed ([Installation Guide](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli))
+- An active Azure subscription
+- Appropriate permissions to create resources and role assignments
+
+**Usage:**
+
+```bash
+./scripts/azure-foundry-setup.sh
+```
+
+The script will guide you through the setup process interactively. You can modify the following variables at the top of the script to customize your deployment:
+- `USER_EMAIL`: Your Azure account email
+- `RG_NAME`: Resource group name
+- `LOCATION`: Azure region (default: australiaeast)
+- `FOUNDY_NAME`: Unique name for your AI Services account
+
+## 7. FAQ
 
 ### Could You Provide the tokenizer.model File for Model Quantization?
 
@@ -368,7 +400,7 @@ For DeepSeek LLM 67B, we utilize **8 NVIDIA A100-PCIE-40GB GPUs** for inference.
 
 <table><thead><tr><th rowspan="2">Batch Size</th><th colspan="5">Sequence Length</th></tr><tr><th>256</th><th>512</th><th>1024</th><th>2048</th><th>4096</th></tr></thead><tbody><tr><td>1</td><td>16.92 GB</td><td>17.11 GB</td><td>17.66 GB</td><td>20.01 GB</td><td>33.23 GB</td></tr><tr><td>2</td><td>17.04 GB</td><td>17.28 GB</td><td>18.55 GB</td><td>25.27 GB</td><td>OOM</td></tr><tr><td>4</td><td>17.20 GB</td><td>17.80 GB</td><td>21.28 GB</td><td>33.71 GB</td><td>OOM</td></tr><tr><td>8</td><td>17.59 GB</td><td>19.25 GB</td><td>25.69 GB</td><td>OOM</td><td>OOM</td></tr><tr><td>16</td><td>18.17 GB</td><td>21.69 GB</td><td>34.54 GB</td><td>OOM</td><td>OOM</td></tr></tbody></table>
 
-## 7. Limitation
+## 8. Limitation
 
 While DeepSeek LLMs have demonstrated impressive capabilities, they are not without their limitations. Here are some potential drawbacks of such models:
 
@@ -378,11 +410,11 @@ While DeepSeek LLMs have demonstrated impressive capabilities, they are not with
 
 3. Repetition: The model may exhibit repetition in their generated responses. This repetition can manifest in various ways, such as repeating certain phrases or sentences, generating redundant information, or producing repetitive structures in the generated text. This issue can make the output of LLMs less diverse and less engaging for users.
 
-## 8. License
+## 9. License
 
 This code repository is licensed under [the MIT License](https://github.com/deepseek-ai/DeepSeek-LLM/blob/HEAD/LICENSE-CODE). The use of DeepSeek LLM Base/Chat models is subject to [the Model License](https://github.com/deepseek-ai/DeepSeek-LLM/blob/HEAD/LICENSE-MODEL). DeepSeek LLM series (including Base and Chat) supports commercial use.
 
-## 9. Citation
+## 10. Citation
 
 ```
 @article{deepseek-llm,
@@ -394,6 +426,6 @@ This code repository is licensed under [the MIT License](https://github.com/deep
 }
 ```
 
-## 10. Contact
+## 11. Contact
 
 If you have any questions, please raise an issue or contact us at [service@deepseek.com](mailto:service@deepseek.com).
